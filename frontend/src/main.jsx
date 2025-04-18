@@ -13,6 +13,7 @@ import Loans from "./components/Loans/Loans.jsx";
 import Portfolio from "./components/Portfolio/Portfolio.jsx";
 import Profile from "./components/Profile/Profile.jsx";
 import Signup from "./components/Auth/Signup.jsx";
+import OTPVerification from "./components/Auth/OTPVerification.jsx";
 
 const router = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/verify-otp",
+        element: <OTPVerification />,
       },
     ],
   },
