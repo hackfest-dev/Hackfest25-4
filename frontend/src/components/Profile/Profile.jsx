@@ -1,7 +1,10 @@
 import React from "react";
 import { LuLogOut } from "react-icons/lu";
 
+import { useNavigate } from "react-router";
+
 function Profile() {
+  const navigate = useNavigate();
   return (
     <div>
       <div className="mt-14 grid grid-cols-5 gap-4 p-5 bg-neutral-950 text-white pt-10 pb-52 ">
@@ -61,7 +64,7 @@ function Profile() {
             <h4>IFSC code: OC92k65RHZ6</h4>
           </div>
         </div>
-        <div className=" col-span-2 p-4 rounded-2xl bg-[#0f1838] h-[390px]">
+        <div className=" col-span-2 p-4 rounded-2xl bg-[#0f1838]">
           <div className=" rounded-2xl p-4  bg-gradient-to-r from-blue-700 via-indigo-700 to-sky-500">
             <div className=" p-1 my-4">
               <h4 className=" text-xl">Total Balance</h4>
@@ -77,9 +80,17 @@ function Profile() {
               </button>
             </div>
           </div>
+          <div className=" my-6 ">
+            <div
+              className=" w-full bg-blue-300 p-4 rounded-xl text-black"
+              onClick={() => navigate("/loan-request")}
+            >
+              Request a Loan
+            </div>
+          </div>
           <div className=" my-4">
             <div className="flex gap-2.5 text-left tracking-wide rounded-xl p-4 w-full text-white bg-black">
-              <LuLogOut className=" mt-1.5"/>
+              <LuLogOut className=" mt-1.5" />
               <span> Logout</span>
             </div>
           </div>
