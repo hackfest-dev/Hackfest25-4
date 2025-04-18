@@ -71,4 +71,52 @@ contract Loans {
         }
         nextLoanId++;
     }
+
+    function getBorrowersLoanInfo(
+        address borrower
+    ) external view returns (LoanAgreement[] memory) {
+        uint256 count = 0;
+        for (uint256 i = 1; i < nextLoanId; i++) {
+            if (loanAgreements[i].borrower == borrower) {
+                count++;
+            }
+        }
+        LoanAgreement[] memory result = new LoanAgreement[](count);
+        uint256 index = 0;
+        for (uint256 i = 1; i < nextLoanId; i++) {
+            if (loanAgreements[i].borrower == borrower) {
+                result[index] = loanAgreements[i];
+                index++;
+            }
+        }
+        return result;
+    }
+
+    function getLendersLoanInfo(
+        address lender
+    ) external view returns (uint256[] memory) {
+        uint256 count = 0;
+        for (uint256 i = 1; i < nextLoanId; i++) {
+            LoanAgreement storage loan = loanAgreements[i];
+            for (uint256 j = 0; j < loan.lenders.length; j++) {
+                if (loan.lenders[j].lender == lender) {
+                    count++;
+                    break;
+                }
+            }
+        }
+        uint256[] memory lenderLoanIds = new uint256[](count);
+        uint256 index = 0;
+        for (uint256 i = 1; i < nextLoanId; i++) {
+            LoanAgreement storage loan = loanAgreements[i];
+            for (uint256 j = 0; j < loan.lenders.length; j++) {
+                if (loan.lenders[j].lender == lender) {
+                    lenderLoanIds[index] = i;
+                    index++;
+                    break;
+                }
+            }
+        }
+        return lenderLoanIds;
+    }
 }
