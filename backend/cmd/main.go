@@ -22,6 +22,7 @@ func main() {
 	mux := http.NewServeMux()
 
 	routes.AuthRoutes(mux)
+	routes.UserRoutes(mux)
 
 	if err := http.ListenAndServe(":8080", mux); err != nil {
 		panic(err)

@@ -46,15 +46,7 @@ func sendOtp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//generate jwt token
-	token, err := helpers.GenarateJwtToken(phNum)
-	if err != nil {
-		http.Error(w, "Error generating JWT token", http.StatusInternalServerError)
-		return
-	}
-
 	//response with cookie
-	http.SetCookie(w, token)
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OTP sent successfully"))
 }
@@ -91,31 +83,32 @@ func verifyOtp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// db := configs.PsqlDb
-	if *res.Status == "approved" {
-		//check in the db if user exists
-		// db.
-	} else {
+	if *res.Status != "approved" {
 		http.Error(w, "Invalid OTP", http.StatusUnauthorized)
-	}
-}
-
-func verifyUser(w http.ResponseWriter, r *http.Request) {
-	name := r.Header.Get("first_name")
-
-	w.WriteHeader(http.StatusOK)
-
-	res := map[string]string{
-		"name": name,
+		return
 	}
 
-	json.NewEncoder(w).Encode(res)
+	//generate jwt token
+	token, err := helpers.GenarateJwtToken(phNum)
+	if err != nil {
+		http.Error(w, "Error generating JWT token", http.StatusInternalServerError)
+		return
+	}
+	http.SetCookie(w, token)
+
+	resData := map[string]string{}
+	name, err := helpers.ParseNameFromNum(phNum)
+	if err != nil {
+		resData["name"] = ""
+	} else {
+		resData["name"] = name
+	}
+
+	json.NewEncoder(w).Encode(resData)
 }
 
 // handle authentication routes
 func AuthRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/send-otp", sendOtp)
 	mux.HandleFunc("POST /auth/verify-otp", verifyOtp)
-
-	mux.Handle("GET /auth/verify-user", helpers.JwtMiddleware(http.HandlerFunc(verifyUser)))
 }
