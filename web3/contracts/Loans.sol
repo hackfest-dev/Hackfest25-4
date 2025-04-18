@@ -11,10 +11,14 @@ contract Loans {
         LenderShare[] lenders;
         address borrower;
         uint24 principal;
-        uint256 tenure;
+        uint8 tenure;
         uint256 sanctionedDate;
         uint8 interestRate;
         int8 agreedPenalty;
+        uint256 monthlyEMI;
+        uint256 totalPaid;
+        uint256 nextDueDate;
+        bool isCompleted;
     }
 
     mapping(uint256 => LoanAgreement) public loanAgreements;
@@ -23,7 +27,7 @@ contract Loans {
     function createLoan(
         address borrower,
         uint24 principal,
-        uint256 tenure,
+        uint8 tenure,
         uint256 sanctionedDate,
         uint8 interestRate,
         int8 agreedPenalty,
@@ -50,6 +54,12 @@ contract Loans {
         loan.sanctionedDate = sanctionedDate;
         loan.interestRate = interestRate;
         loan.agreedPenalty = agreedPenalty;
+        loan.monthlyEMI =
+            (((principal * interestRate) / 100) + principal) /
+            tenure;
+        loan.totalPaid = 0;
+        loan.nextDueDate = sanctionedDate + 30 days;
+        loan.isCompleted = false;
 
         for (uint256 i = 0; i < lenderAddresses.length; i++) {
             loan.lenders.push(
@@ -59,7 +69,6 @@ contract Loans {
                 })
             );
         }
-
         nextLoanId++;
     }
 }
