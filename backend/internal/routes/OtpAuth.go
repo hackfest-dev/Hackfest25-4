@@ -79,6 +79,7 @@ func verifyOtp(w http.ResponseWriter, r *http.Request) {
 	serviceSid := os.Getenv("TWILIO_SERVICE_SID")
 	client := configs.TwilioClient
 
+	//verify the OTP
 	verifyParams := &openapi.CreateVerificationCheckParams{}
 	verifyParams.SetTo(phNum)
 	verifyParams.SetCode(otp)
@@ -90,12 +91,25 @@ func verifyOtp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// db := configs.PsqlDb
 	if *res.Status == "approved" {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("OTP verified successfully"))
+		//check in the db if user exists
+		// db.
 	} else {
 		http.Error(w, "Invalid OTP", http.StatusUnauthorized)
 	}
+}
+
+func verifyUser(w http.ResponseWriter, r *http.Request) {
+	name := r.Header.Get("first_name")
+
+	w.WriteHeader(http.StatusOK)
+
+	res := map[string]string{
+		"name": name,
+	}
+
+	json.NewEncoder(w).Encode(res)
 }
 
 // handle authentication routes
@@ -103,13 +117,5 @@ func AuthRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /auth/send-otp", sendOtp)
 	mux.HandleFunc("POST /auth/verify-otp", verifyOtp)
 
-	mux.HandleFunc("/ok", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("everything is ok"))
-	})
-
-	mux.HandleFunc("/error", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("everything is not ok"))
-	})
+	mux.Handle("GET /auth/verify-user", helpers.JwtMiddleware(http.HandlerFunc(verifyUser)))
 }
