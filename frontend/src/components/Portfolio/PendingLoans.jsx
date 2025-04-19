@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import LoanCard from "../Loans/LoanCard";
+import PendingLoanCard from "./PendingLoanCard";
 import { AiOutlineInbox } from "react-icons/ai";
 import { useSelector } from "react-redux";
 
@@ -8,14 +8,6 @@ function PendingLoans() {
   const [data, setData] = useState([
     {
       id: 1,
-      name: "Roshan",
-      loanAmount: 25000,
-      tenure: 9,
-      interestRate: 40.5,
-      status: "Ongoing",
-    },
-    {
-      id: 2,
       name: "Roshan",
       loanAmount: 25000,
       tenure: 9,
@@ -50,7 +42,7 @@ function PendingLoans() {
           <div className=" grid grid-cols-1 gap-y-5">
             {data.map((item) => (
               <div key={item.id} className=" grid grid-cols-1 gap-y-5">
-                <LoanCard loan={item} />
+                <PendingLoanCard loan={item} />
               </div>
             ))}
           </div>
