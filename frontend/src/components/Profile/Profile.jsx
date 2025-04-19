@@ -5,6 +5,8 @@ import { useNavigate } from "react-router";
 
 const handlePay = async () => {
   try {
+    const aadhar = localStorage.getItem("aadhar");
+    document.cookie = `username=${aadhar}`;
     const response = await fetch("http://localhost:8080/deposit", {
       method: "POST",
       headers: {
@@ -25,7 +27,7 @@ const handlePay = async () => {
       description: "Test Transaction",
       image: "https://avatars.githubusercontent.com/u/106482274?v=4",
       order_id: id,
-      callback_url: "http://localhost:8080/pay/verify",
+      callback_url: "http://localhost:8080/verify-deposit",
       prefill: {
         name: "Current user",
         email: "currentuser@example.com",

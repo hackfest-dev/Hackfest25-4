@@ -70,7 +70,8 @@ func verifyUser(w http.ResponseWriter, r *http.Request) {
 	err := db.QueryRow(query, input.Aadhar).Scan(&user.Id, &user.Name, &user.PhNum, &user.Email, &user.Address, &user.City, &user.State, &user.Pincode, &user.AdhaarNum, &user.PanNum, &user.BankName, &user.AcNum, &user.Ifsc, &user.Balance, &user.LoanIds)
 	if err != nil {
 		fmt.Println("psql err", err)
-		http.Error(w, "Error fetching user from database", http.StatusInternalServerError)
+		json.NewEncoder(w).Encode("{error: 'User not found'}")
+		return
 	}
 
 	fmt.Println(user)

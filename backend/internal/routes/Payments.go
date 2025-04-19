@@ -49,6 +49,7 @@ func verifyCreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cookie := cook.Value
+	fmt.Println("aadh", cookie)
 
 	if err := r.ParseForm(); err != nil {
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
@@ -99,5 +100,4 @@ func verifyCreateOrder(w http.ResponseWriter, r *http.Request) {
 func PaymentRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /deposit", createOrder)
 	mux.HandleFunc("POST /verify-deposit", verifyCreateOrder)
-	
 }
