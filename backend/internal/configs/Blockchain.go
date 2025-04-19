@@ -1,12 +1,17 @@
 package configs
 
 import (
+	"fmt"
 	"log"
+	"math/big"
+	"net/http"
+	"server/internal/configs"
 	"strings"
 
 	"github.com/ethereum/go-ethereum/accounts/abi"
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
 	"github.com/ethereum/go-ethereum/common"
+	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/ethclient"
 )
 
@@ -300,4 +305,36 @@ func InitLoanContract(client *ethclient.Client) {
 	}
 
 	LoanContract = bind.NewBoundContract(loanContractAdrs, parsedLoanAbi, client, client, client)
+}
+
+func SignContract(id int) error {
+
+	privateKey, err := crypto.HexToECDSA("ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80")
+	if err != nil {
+		return err
+	}
+
+	chainID := big.NewInt(31337)
+	transactOpt := bind.NewKeyedTransactor(privateKey, chainID)
+
+  db := configs.PsqlDB
+  
+
+	// createLoan(
+	//         address borrower,
+	//         uint32 principal,
+	//         uint8 tenure,
+	//         uint256 sanctionedDate,
+	//         uint8 interestRate,
+	//         int8 agreedPenalty,
+	//         address[] calldata lenderAddresses,
+	//         uint8[] calldata percentages
+	//calling the contract function initLoan
+	tx, err := LoanContract.Transact(transactOpt, "createLoan")
+	if err != nil {
+		return err
+	}
+	price := tx.Cost()
+	fmt.Println("transaction cost : ", price)
+	return nil
 }

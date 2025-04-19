@@ -21,6 +21,7 @@ func main() {
 	configs.InitTwilio()
 	psqlConn := configs.InitPsql()
 	defer psqlConn.Close()
+	configs.InitRazorPayClient()
 
 	//initializing all routes
 	mux := http.NewServeMux()

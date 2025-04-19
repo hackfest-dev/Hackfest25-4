@@ -6,7 +6,7 @@ import { useNavigate } from "react-router";
 const handlePay = async () => {
   try {
     const aadhar = localStorage.getItem("aadhar");
-    document.cookie = `username=${aadhar}`;
+    document.cookie = `aadhar=${aadhar}`;
     const response = await fetch("http://localhost:8080/deposit", {
       method: "POST",
       headers: {
