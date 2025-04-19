@@ -6,19 +6,25 @@ contract Loans {
         address lender;
         uint8 percentage;
     }
+
+    struct Installment {
+        uint256 amount;
+        uint8 interest;
+        uint256 dueBy;
+        bool isPaid;
+    }
+
     struct LoanAgreement {
         uint256 loanId;
         LenderShare[] lenders;
         address borrower;
-        uint24 principal;
+        uint32 principal;
         uint8 tenure;
         uint256 sanctionedDate;
         uint8 interestRate;
         int8 agreedPenalty;
-        uint256 monthlyEMI;
-        uint256 totalPaid;
-        uint256 nextDueDate;
         bool isCompleted;
+        Installment[] installments;
     }
 
     mapping(uint256 => LoanAgreement) public loanAgreements;
@@ -26,7 +32,7 @@ contract Loans {
 
     function createLoan(
         address borrower,
-        uint24 principal,
+        uint32 principal,
         uint8 tenure,
         uint256 sanctionedDate,
         uint8 interestRate,
@@ -54,11 +60,6 @@ contract Loans {
         loan.sanctionedDate = sanctionedDate;
         loan.interestRate = interestRate;
         loan.agreedPenalty = agreedPenalty;
-        loan.monthlyEMI =
-            (((principal * interestRate) / 100) + principal) /
-            tenure;
-        loan.totalPaid = 0;
-        loan.nextDueDate = sanctionedDate + 30 days;
         loan.isCompleted = false;
 
         for (uint256 i = 0; i < lenderAddresses.length; i++) {
@@ -66,6 +67,24 @@ contract Loans {
                 LenderShare({
                     lender: lenderAddresses[i],
                     percentage: percentages[i]
+                })
+            );
+        }
+
+        // Create installments
+        uint32 amount;
+        uint256 temp;
+        amount = principal / tenure;
+        for (uint8 i = 0; i < tenure; i++) {
+            unchecked {
+                temp = sanctionedDate + ((i + 1) * 30 days);
+            }
+            loan.installments.push(
+                Installment({
+                    amount: amount,
+                    interest: interestRate,
+                    dueBy: temp,
+                    isPaid: false
                 })
             );
         }
@@ -118,5 +137,20 @@ contract Loans {
             }
         }
         return lenderLoanIds;
+    }
+
+    function getLendersForLoan(
+        uint256 loanId
+    ) external view returns (address[] memory, uint8[] memory) {
+        LenderShare[] storage shares = loanAgreements[loanId].lenders;
+        address[] memory addresses = new address[](shares.length);
+        uint8[] memory percentages = new uint8[](shares.length);
+
+        for (uint256 i = 0; i < shares.length; i++) {
+            addresses[i] = shares[i].lender;
+            percentages[i] = shares[i].percentage;
+        }
+
+        return (addresses, percentages);
     }
 }
