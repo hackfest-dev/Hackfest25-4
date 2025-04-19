@@ -9,7 +9,7 @@ import (
 	"server/internal/helpers"
 	"time"
 
-	"github.com/twilio/twilio-go/rest/verify/v2"
+	openapi "github.com/twilio/twilio-go/rest/verify/v2"
 )
 
 type SendOtpReq struct {
@@ -108,12 +108,12 @@ func verifyOtp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	http.SetCookie(w,  &http.Cookie{
+	http.SetCookie(w, &http.Cookie{
 		Name:    "jwt",
 		Value:   token.Value,
 		Expires: time.Now().AddDate(0, 1, 0),
 	})
-	
+
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resData)
 }

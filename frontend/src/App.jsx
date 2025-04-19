@@ -10,22 +10,27 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!authStatus) {
-      fetch("http://localhost:8080/user/verify-user", {
-        method: "GET",
-      })
-        .then((res) => {
-          if (res.status === 401) {
-            navigate("/verify-otp");
-          }else{
-            navigate("/");
-          }
-        })
-        .catch((err) => {
+    const varifyuser = async () => {
+      if (!authStatus) {
+        try {
+          const num = localStorage.getItem("aadhar");
+          console.log("num", num);
+          if (num == null) throw new Error("No aadhar number found");
+          const res = fetch("http://localhost:8080/user/verify-user", {
+            method: "POST",
+            body: JSON.stringify({ aadhar: num}),
+          });
+
+          const body = await res.json();
+          console.log("body", body);
+          navigate("/");
+        } catch (err) {
           navigate("/verify-otp");
-          console.log("error :",err);
-        });
-    }
+          console.log("error :", err);
+        }
+      }
+    };
+    varifyuser();
   }, [authStatus]);
 
   return (

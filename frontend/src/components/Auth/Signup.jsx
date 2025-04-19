@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { login } from "../../Store/authSlice";
 
 import { ToastContainer, toast, Bounce } from "react-toastify";
+import { Navigate, useNavigate } from "react-router";
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
@@ -22,6 +23,7 @@ function Login() {
   const [errors, setErrors] = useState({});
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const validateForm = () => {
     const newErrors = {};
@@ -126,6 +128,8 @@ function Login() {
           body: JSON.stringify(formData),
         });
 
+        localStorage.setItem("aadhar", formData.aadharNumber);
+        navigate("/");
         toast.success("Form submitted");
       } catch (err) {
         toast.error("Error submitting form");

@@ -1,22 +1,27 @@
 package configs
 
 import (
-	"context"
+	"database/sql"
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	_ "github.com/lib/pq"
 )
 
-var PsqlDb *pgx.Conn
+var PsqlDB *sql.DB
 
-func InitPsql() *pgx.Conn {
-	connStr := os.Getenv("PSQL_DB_URL")
-	conn, err := pgx.Connect(context.Background(), connStr)
+func InitPsql() *sql.DB {
+	connStr := os.Getenv("PSQL_DB_URL") 
+
+	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal("Unable to connect to database:", err)
 	}
 
-	PsqlDb = conn
-	return conn
+	if err = db.Ping(); err != nil {
+		log.Fatal("Unable to ping database:", err)
+	}
+	
+	PsqlDB = db
+	return db
 }

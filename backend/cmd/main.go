@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net/http"
 	"server/internal/configs"
@@ -21,13 +20,15 @@ func main() {
 	// defer ethCl.Close()
 	configs.InitTwilio()
 	psqlConn := configs.InitPsql()
-	defer psqlConn.Close(context.Background())
+	defer psqlConn.Close()
 
 	mux := http.NewServeMux()
 	//add cors allow all origins
 
 	routes.AuthRoutes(mux)
 	routes.UserRoutes(mux)
+	routes.BorrowerRoutes(mux)
+	routes.LoanRoutes(mux)
 
 	handler := cors.AllowAll().Handler(mux)
 

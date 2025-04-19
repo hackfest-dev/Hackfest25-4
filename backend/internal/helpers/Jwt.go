@@ -1,7 +1,6 @@
 package helpers
 
 import (
-	"context"
 	"net/http"
 	"os"
 	"server/internal/configs"
@@ -51,8 +50,8 @@ func VerifyJwtToken(token string) (string, error) {
 
 // to get user details from db
 func ParseNameFromNum(phNum string) (string, error) {
-	db := configs.PsqlDb
-	row, err := db.Query(context.Background(), "SELECT first_name FROM users WHERE ph_num = $1", phNum)
+	db := configs.PsqlDB
+	row, err := db.Query("SELECT first_name FROM users WHERE ph_num = $1", phNum)
 	if err != nil {
 		return "", err
 	}
