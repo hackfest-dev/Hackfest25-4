@@ -7,6 +7,7 @@ import (
 	"os"
 	"server/internal/configs"
 	"server/internal/helpers"
+	"time"
 
 	"github.com/twilio/twilio-go/rest/verify/v2"
 )
@@ -97,7 +98,6 @@ func verifyOtp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error generating JWT token", http.StatusInternalServerError)
 		return
 	}
-	http.SetCookie(w, token)
 
 	resData := map[string]string{}
 	name, err := helpers.ParseNameFromNum(phNum)
@@ -107,6 +107,14 @@ func verifyOtp(w http.ResponseWriter, r *http.Request) {
 		resData["name"] = name
 	}
 
+	w.Header().Set("Content-Type", "application/json")
+	http.SetCookie(w,  &http.Cookie{
+		Name:    "jwt",
+		Value:   token.Value,
+		Expires: time.Now().AddDate(0, 1, 0),
+	})
+	
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(resData)
 }
 

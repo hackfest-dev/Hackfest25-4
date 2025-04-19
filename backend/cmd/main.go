@@ -17,8 +17,8 @@ func main() {
 	}
 
 	//initializing all the configs
-	ethCl := configs.InitEthClient()
-	defer ethCl.Close()
+	// ethCl := configs.InitEthClient()
+	// defer ethCl.Close()
 	configs.InitTwilio()
 	psqlConn := configs.InitPsql()
 	defer psqlConn.Close(context.Background())

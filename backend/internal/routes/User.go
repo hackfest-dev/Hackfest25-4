@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"server/internal/configs"
 	"server/internal/helpers"
+	// "time"
 
 	"github.com/ethereum/go-ethereum/crypto"
 	"github.com/ethereum/go-ethereum/rpc"
@@ -84,7 +85,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	db := configs.PsqlDb
 
-	//insert the user into the database
+	// insert the user into the database
 	_, err = db.Exec(context.Background(), "INSERT INTO users (first_name, ph_num, email, address, city, state, pincode, adhaar_card_num, pan_card_num, bank_name, ac_num, ifsc) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)",
 		user.Name, user.PhNum, user.Email, user.Address, user.City, user.State, user.Pincode, user.AdhaarNum, user.PanNum, user.BankName, user.AcNum, user.Ifsc)
 	if err != nil {
@@ -98,7 +99,20 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Error creating custodial wallet", http.StatusInternalServerError)
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	//generate jwt token
+	// token, err := helpers.GenarateJwtToken(user.PhNum)
+	// if err != nil {
+	// 	http.Error(w, "Error generating JWT token", http.StatusInternalServerError)
+	// 	return
+	// }
+	// cookie := &http.Cookie{
+	// 	Name:    "jwt",
+	// 	Value:   token.Value,
+	// 	Expires: time.Now().AddDate(0, 1, 0),
+	// }
+	// http.SetCookie(w, cookie)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User created successfully"})
 }
 
