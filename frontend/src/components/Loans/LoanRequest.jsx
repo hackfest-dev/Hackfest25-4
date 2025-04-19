@@ -13,7 +13,7 @@ function LoanRequest() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: Number(value),
     }));
     // Clear error when user starts typing
     if (errors[name]) {
@@ -60,8 +60,14 @@ function LoanRequest() {
         const aadhar = localStorage.getItem("aadhar");
         await fetch("http://localhost:8080/borrower/create-loan", {
           method: "POST",
-          body: JSON.stringify({ formData: formData, aadhar: aadhar }),
+          body: JSON.stringify({
+            aadhar,
+            amount: formData.amount,
+            tenure: formData.tenure,
+            interestRate: formData.interestRate,
+          }),
         });
+        console.log(formData);
         toast.success("Loan request created successfully!!");
       } catch (error) {
         console.log(error);
