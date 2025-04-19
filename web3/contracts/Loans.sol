@@ -141,7 +141,56 @@ contract Loans {
                 }
             }
         }
-
         return result;
+    }
+
+    function updateInstallment(
+        uint256 loanId,
+        uint8 installmentIndex,
+        bool isPaid,
+        uint256 newDueBy,
+        uint8 newInterest
+    ) external {
+        require(loanId < nextLoanId && loanId > 0, "Invalid loan ID");
+        LoanAgreement storage loan = loanAgreements[loanId];
+
+        require(
+            msg.sender == loan.borrower,
+            "Only borrower can update installment"
+        );
+
+        require(
+            installmentIndex < loan.installments.length,
+            "Invalid installment index"
+        );
+
+        loan.installments[installmentIndex].isPaid = isPaid;
+        loan.installments[installmentIndex].dueBy = newDueBy;
+        loan.installments[installmentIndex].interest = newInterest;
+
+        bool allPaid = true;
+        for (uint8 i = 0; i < loan.installments.length; i++) {
+            if (!loan.installments[i].isPaid) {
+                allPaid = false;
+                break;
+            }
+        }
+
+        if (allPaid) {
+            loan.isCompleted = true;
+        }
+    }
+
+    function getInstallment(
+        uint256 loanId,
+        uint8 installmentIndex
+    ) external view returns (Installment memory) {
+        require(loanId < nextLoanId && loanId > 0, "Invalid loan ID");
+        LoanAgreement storage loan = loanAgreements[loanId];
+        require(
+            installmentIndex < loan.installments.length,
+            "Invalid installment index"
+        );
+        return loan.installments[installmentIndex];
     }
 }
