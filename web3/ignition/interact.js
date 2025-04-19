@@ -110,29 +110,32 @@ async function displayBorrowerLoans(loansContract, borrower, borrowerName) {
 }
 
 async function displayLenderLoans(loansContract, lender, lenderName) {
-  const lenderLoanIds = await loansContract.getLendersLoanInfo(lender.address);
+  // Updated to use the new getLendersLoanInfo that returns full loan details
+  const lenderLoans = await loansContract.getLendersLoanInfo(lender.address);
   
-  console.log(`${lenderName} (${lender.address}) is involved in ${lenderLoanIds.length} loans:`);
+  console.log(`${lenderName} (${lender.address}) is involved in ${lenderLoans.length} loans:`);
   
-  for (let i = 0; i < lenderLoanIds.length; i++) {
-    const loanId = lenderLoanIds[i];
-    const loan = await loansContract.loanAgreements(loanId);
+  for (let i = 0; i < lenderLoans.length; i++) {
+    const loan = lenderLoans[i];
     
     console.log(`\n  LOAN ID: ${loan.loanId}`);
     console.log(`  Borrower: ${loan.borrower}`);
     console.log(`  Principal: ${loan.principal}`);
     console.log(`  Tenure: ${loan.tenure} months`);
+    console.log(`  Sanctioned Date: ${new Date(Number(loan.sanctionedDate) * 1000).toLocaleString()}`);
     console.log(`  Interest Rate: ${loan.interestRate}%`);
+    console.log(`  Penalty: ${loan.agreedPenalty}%`);
+    console.log(`  Completed: ${loan.isCompleted}`);
     
-    // Use the same loansContract instance
-    const [addresses, percentages] = await loansContract.getLendersForLoan(loanId);
-    if (addresses.length === 0) {
-        console.log(`Lender details not found for Loan ID ${loanId}.`);
-    } else {
-        console.log(`Lenders for Loan ID ${loanId}:`);
-        for (let i = 0; i < addresses.length; i++) {
-            console.log(`- Lender: ${addresses[i]}, Share: ${percentages[i]}%`);
-        }
+    console.log("  Lenders:");
+    for (let j = 0; j < loan.lenders.length; j++) {
+      console.log(`    Lender ${j+1}: ${loan.lenders[j].lender} - ${loan.lenders[j].percentage}%`);
+    }
+    
+    console.log("  Installments:");
+    for (let k = 0; k < loan.installments.length; k++) {
+      const installment = loan.installments[k];
+      console.log(`    Installment ${k+1}: Amount ${installment.amount}, Interest ${installment.interest}%, Due by ${new Date(Number(installment.dueBy) * 1000).toLocaleString()}, Paid: ${installment.isPaid}`);
     }
   }
   

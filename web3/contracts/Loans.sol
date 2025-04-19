@@ -113,7 +113,8 @@ contract Loans {
 
     function getLendersLoanInfo(
         address lender
-    ) external view returns (uint256[] memory) {
+    ) external view returns (LoanAgreement[] memory) {
+        // First, count how many loans this lender is part of
         uint256 count = 0;
         for (uint256 i = 1; i < nextLoanId; i++) {
             LoanAgreement storage loan = loanAgreements[i];
@@ -124,33 +125,23 @@ contract Loans {
                 }
             }
         }
-        uint256[] memory lenderLoanIds = new uint256[](count);
+
+        // Create an array to store all the loan agreements
+        LoanAgreement[] memory result = new LoanAgreement[](count);
         uint256 index = 0;
+
+        // Populate the array with loan agreements
         for (uint256 i = 1; i < nextLoanId; i++) {
             LoanAgreement storage loan = loanAgreements[i];
             for (uint256 j = 0; j < loan.lenders.length; j++) {
                 if (loan.lenders[j].lender == lender) {
-                    lenderLoanIds[index] = i;
+                    result[index] = loan;
                     index++;
                     break;
                 }
             }
         }
-        return lenderLoanIds;
-    }
 
-    function getLendersForLoan(
-        uint256 loanId
-    ) external view returns (address[] memory, uint8[] memory) {
-        LenderShare[] storage shares = loanAgreements[loanId].lenders;
-        address[] memory addresses = new address[](shares.length);
-        uint8[] memory percentages = new uint8[](shares.length);
-
-        for (uint256 i = 0; i < shares.length; i++) {
-            addresses[i] = shares[i].lender;
-            percentages[i] = shares[i].percentage;
-        }
-
-        return (addresses, percentages);
+        return result;
     }
 }
