@@ -28,10 +28,15 @@ function Borrowings() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/user/loans/ongoing");
-        if (res.status == 200) {
-          setData(res.data);
-        }
+        const res = await fetch(
+          "http://localhost:8080/borrower/web3/view-loan",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              aadhar: localStorage.getItem("aadhar"),
+            }),
+          }
+        );
       } catch (error) {
         console.log(error);
       }

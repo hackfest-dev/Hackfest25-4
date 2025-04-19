@@ -7,7 +7,6 @@ function Portfolio() {
     <div className=" bg-neutral-950 p-10">
       <Investments />
       <PendingLoans />
-      <Borrowings />
     </div>
   );
 }

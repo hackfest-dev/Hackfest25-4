@@ -48,14 +48,12 @@ function LoanDetails() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // fetch a single loan document based on id
         const res = await fetch("http://localhost:8080/lender/loan", {
           method: "POST",
           body: JSON.stringify({
             loan_id: id,
           }),
         });
-        console.log();
         const body = await res.json();
         setData(body);
         console.log(body);
@@ -73,7 +71,7 @@ function LoanDetails() {
           Loan ID: <strong>5igsfjf5w54snf</strong>
         </h1>
         <h1 className=" text-neutral-100 text-2xl my-3.5 ml-10">
-          Borrower name: <strong>Shishir S</strong>
+          User ID: <strong>fvoneff5w54snf</strong>
         </h1>
         <h1 className=" text-neutral-400 text-xl my-3.5 ml-10">
           Amount: <strong className=" text-blue-200">25000.00</strong>

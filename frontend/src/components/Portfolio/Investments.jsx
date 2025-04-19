@@ -23,21 +23,29 @@ function Investments() {
     },
   ]);
 
-  useEffect( () => {
+  useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/user/investments");
-        if (res.status == 200) {
-          setData(res.data);
-        }
+        const res = await fetch(
+          "http://localhost:8080/lender/web3/invested-loan",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              adhaar: localStorage.getItem("adhaar"),
+            }),
+          }
+        );
+        const data = await res.json();
+        setData(data);
+        console.log(res);
       } catch (error) {
         console.log(error);
       }
     };
-    
+
     fetchData();
   }, [status]);
-  
+
   return (
     <div>
       <div className=" bg-neutral-900 mt-8 p-10 rounded-xl">
@@ -49,8 +57,6 @@ function Investments() {
             Your investments
           </h1>
           <div className=" grid grid-cols-1 gap-y-5">
-            <InvestmentCard />
-            <InvestmentCard />
             <InvestmentCard />
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React from "react";
 import { LuLogOut } from "react-icons/lu";
-
+import { useSelector } from "react-redux";
 import { useNavigate } from "react-router";
 
 const handlePay = async () => {
@@ -49,15 +49,18 @@ const handlePay = async () => {
 
 function Profile() {
   const navigate = useNavigate();
-  return (
+  const user = useSelector((state) => state.auth.userData);
+  return user ? (
     <div>
       <div className="mt-14 grid grid-cols-5 gap-4 p-5 bg-neutral-950 text-white pt-10 pb-52 ">
         <div className=" col-span-3  p-4 rounded-2xl bg-[#0f1838]">
           <div className="mb-4 p-4 w-full rounded-2xl  bg-blue-900">
             <h2 className=" font-semibold text-lg tracking-wide ">
-              Avin Joy Dcosta
+              {user.name}
             </h2>
-            <h4 className=" text-neutral-400">Lender ID: C1OC65RHZ6</h4>
+            <h4 className=" text-neutral-400">
+              Lender ID: {user.adhaar_card_num}
+            </h4>
           </div>
           <div className="mb-4 p-4 w-full rounded-2xl bg-blue-900">
             <h2 className=" font-semibold text-lg tracking-wide ">
@@ -67,35 +70,25 @@ function Profile() {
               <div>
                 <h6 className=" text-gray-400">Name</h6>
                 <h2 className="font-semibold text-lg tracking-wide ">
-                  Avin Joy Dcosta
+                  {user.first_name}
                 </h2>
               </div>
               <div>
                 <h6 className=" text-gray-400">Mobile number</h6>
                 <h2 className="font-semibold text-lg tracking-wide ">
-                  965743213
+                  {user.ph_num}
                 </h2>
               </div>{" "}
               <div>
                 <h6 className=" text-gray-400">PAN Number</h6>
                 <h2 className="font-semibold text-lg tracking-wide ">
-                  ABXCDJS
+                  {user.pan_card_num}
                 </h2>
-              </div>
-              <div>
-                <h6 className=" text-gray-400">Date of Birth</h6>
-                <h2 className="font-semibold text-lg tracking-wide ">
-                  02/09/03
-                </h2>
-              </div>{" "}
-              <div>
-                <h6 className=" text-gray-400">Gender</h6>
-                <h2 className="font-semibold text-lg tracking-wide ">Male</h2>
               </div>
               <div>
                 <h6 className=" text-gray-400">Email</h6>
                 <h2 className="font-semibold text-lg tracking-wide ">
-                  abccd23@gmail.com
+                  {user.email}
                 </h2>
               </div>
             </div>
@@ -104,8 +97,8 @@ function Profile() {
             <h2 className=" my-2 font-semibold text-lg tracking-wide ">
               Bank account
             </h2>
-            <h4>Account number: C1OC65RHZ6</h4>
-            <h4>IFSC code: OC92k65RHZ6</h4>
+            <h4>Account number: {user.ac_num}</h4>
+            <h4>IFSC code: {user.ifsc}</h4>
           </div>
         </div>
         <div className=" col-span-2 p-4 rounded-2xl bg-[#0f1838]">
@@ -144,7 +137,7 @@ function Profile() {
         </div>
       </div>
     </div>
-  );
+  ) : null;
 }
 
 export default Profile;

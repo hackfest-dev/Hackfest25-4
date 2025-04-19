@@ -15,7 +15,6 @@ function PendingLoans() {
       status: "Ongoing",
     },
   ]);
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,7 +25,9 @@ function PendingLoans() {
             aadhar,
           }),
         });
-        console.log(res);
+        const body = await res.json();
+        setData(body);
+        console.log(body);
       } catch (error) {
         console.log(error);
       }

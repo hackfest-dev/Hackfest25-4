@@ -3,20 +3,20 @@ import "./App.css";
 
 import { Outlet } from "react-router";
 import Navbar from "./components/Navbar/Navbar";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
+import { login } from "./Store/authSlice";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 
 function App() {
   const authStatus = useSelector((state) => state.auth.status);
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const varifyuser = async () => {
       if (!authStatus) {
         try {
           const num = localStorage.getItem("aadhar");
-          console.log("num", num);
           if (num == null) throw new Error("No aadhar number found");
           const res = await fetch("http://localhost:8080/user/verify-user", {
             method: "POST",
@@ -24,6 +24,7 @@ function App() {
           });
 
           const body = await res.json();
+          dispatch(login(body));
           console.log("body", body);
           navigate("/");
         } catch (err) {
