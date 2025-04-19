@@ -9,7 +9,6 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/rs/cors v1.7.0
 	github.com/twilio/twilio-go v1.25.1
-	golang.org/x/time v0.9.0
 )
 
 require (

@@ -2,26 +2,47 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
-	// "server/internal/configs"
+	"server/internal/configs"
 )
+
+type Loan struct {
+	LoanID        int64   `json:"loan_id"`
+	Aadhar        string  `json:"asked_by"`
+	Amt           int64   `json:"amount"`
+	Tenure        int32   `json:"tenure"`
+	Rate          int32   `json:"interest"`
+	Penalty       int32   `json:"penalty"`
+	Contributions []uint8 `json:"contributions"`
+}
 
 // to get all the loan requests of the user
 func getAllLoanReq(w http.ResponseWriter, r *http.Request) {
 
-	var body struct {
-		Aadhar string `json:"aadhar"`
-	}
-	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	db := configs.PsqlDB
+
+	query := `SELECT * FROM loan_asked;`
+	rows, err := db.Query(query)
+	if err != nil {
+		http.Error(w, "Error querying data", http.StatusInternalServerError)
 		return
 	}
+	defer rows.Close()
 
-	// db := configs.PsqlDB
+	var allLoans []Loan
+	for rows.Next() {
+		var loan Loan
+		if err := rows.Scan(&loan.LoanID, &loan.Aadhar, &loan.Amt, &loan.Tenure, &loan.Rate, &loan.Penalty, &loan.Contributions); err != nil {
+			http.Error(w, "Error scanning row", http.StatusInternalServerError)
+			return
+		}
+		allLoans = append(allLoans, loan)
+	}
 
-	// query := `SELECT * FROM loan_asked;`
-	// rows, err := db.Query(query, body.Aadhar)
-
+	fmt.Println("all loans", allLoans)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(allLoans)
 }
 
 // routes to for loan operations

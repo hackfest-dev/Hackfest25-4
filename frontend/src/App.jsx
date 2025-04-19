@@ -16,7 +16,7 @@ function App() {
           const num = localStorage.getItem("aadhar");
           console.log("num", num);
           if (num == null) throw new Error("No aadhar number found");
-          const res = fetch("http://localhost:8080/user/verify-user", {
+          const res = await fetch("http://localhost:8080/user/verify-user", {
             method: "POST",
             body: JSON.stringify({ aadhar: num}),
           });

@@ -14,7 +14,7 @@ type LoanReq struct {
 	Rate   int32  `json:"rate"`
 }
 
-type GetLoanQuery struct {
+type LoanAskT struct {
 	LoanID        int64   `json:"loan_id"`
 	Aadhar        string  `json:"asked_by"`
 	Amt           int64   `json:"amount"`
@@ -63,32 +63,13 @@ func getLoanDetails(w http.ResponseWriter, r *http.Request) {
 
 	query := `SELECT * FROM loan_asked WHERE asked_by = $1;`
 
-	// rows, err := db.Query(query, input.Aadhar)
-	// if err != nil {
-	// 	fmt.Println("Error querying data:", err)
-	// 	http.Error(w, "Error querying data", http.StatusInternalServerError)
-	// 	return
-	// }
-	// defer rows.Close()
-	var loanReq GetLoanQuery
+	var loanReq LoanAskT
 	err := db.QueryRow(query, input.Aadhar).Scan(&loanReq.LoanID, &loanReq.Aadhar, &loanReq.Amt, &loanReq.Tenure, &loanReq.Rate, &loanReq.Penalty, &loanReq.Contributions)
 	if err != nil {
 		fmt.Println("Error querying data:", err)
 		http.Error(w, "Error querying data", http.StatusInternalServerError)
 		return
 	}
-
-	// for rows.Next() {
-	// 	var loanReq LoanQuery
-	// 	if err := rows.Scan(&loanReq.LoanID, &loanReq.Aadhar, &loanReq.Amt, &loanReq.Tenure, &loanReq.Rate, &loanReq.Penalty, &loanReq.Contributions); err != nil {
-	// 		fmt.Println("Error scanning data:", err)
-	// 		http.Error(w, "Error scanning data", http.StatusInternalServerError)
-	// 		return
-	// 	}
-
-	// 	fmt.Println("Loan Request:", loanReq)
-	// 	loanReqs = append(loanReqs, loanReq)
-	// }
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(loanReq)
