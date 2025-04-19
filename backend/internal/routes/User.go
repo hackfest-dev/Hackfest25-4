@@ -14,18 +14,20 @@ import (
 )
 
 type CreateUsers struct {
-	Email     string `json:"email"`
-	Name      string `json:"name"`
-	PhNum     string `json:"phone"`
-	Address   string `json:"address"`
-	City      string `json:"city"`
-	State     string `json:"state"`
-	Pincode   string `json:"pincode"`
-	AdhaarNum string `json:"aadharNumber"`
-	PanNum    string `json:"pan"`
-	AcNum     string `json:"accountNumber"`
-	Ifsc      string `json:"ifsc"`
-	BankName  string `json:"bankName"`
+	Email     string  `json:"email"`
+	Name      string  `json:"name"`
+	PhNum     string  `json:"phone"`
+	Address   string  `json:"address"`
+	City      string  `json:"city"`
+	State     string  `json:"state"`
+	Pincode   string  `json:"pincode"`
+	AdhaarNum string  `json:"aadharNumber"`
+	PanNum    string  `json:"pan"`
+	AcNum     string  `json:"accountNumber"`
+	Ifsc      string  `json:"ifsc"`
+	BankName  string  `json:"bankName"`
+	Balance   int32  `json:"balance"`
+	LoanIds   []uint8 `json:"loanids"`
 }
 
 type User struct {
@@ -42,6 +44,8 @@ type User struct {
 	BankName  string `json:"bank_name"`
 	AcNum     string `json:"ac_num"`
 	Ifsc      string `json:"ifsc"`
+	Balance   int32  `json:"balance"`
+	LoanIds   []uint8 `json:"loanids"`
 }
 
 type VerifyArg struct {
@@ -63,7 +67,7 @@ func verifyUser(w http.ResponseWriter, r *http.Request) {
          WHERE adhaar_card_num = $1`
 
 	var user User
-	err := db.QueryRow(query, input.Aadhar).Scan(&user.Id, &user.Name, &user.PhNum, &user.Email, &user.Address, &user.City, &user.State, &user.Pincode, &user.AdhaarNum, &user.PanNum, &user.BankName, &user.AcNum, &user.Ifsc)
+	err := db.QueryRow(query, input.Aadhar).Scan(&user.Id, &user.Name, &user.PhNum, &user.Email, &user.Address, &user.City, &user.State, &user.Pincode, &user.AdhaarNum, &user.PanNum, &user.BankName, &user.AcNum, &user.Ifsc, &user.Balance, &user.LoanIds)
 	if err != nil {
 		fmt.Println("psql err", err)
 		http.Error(w, "Error fetching user from database", http.StatusInternalServerError)

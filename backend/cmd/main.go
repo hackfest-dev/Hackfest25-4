@@ -16,19 +16,20 @@ func main() {
 	}
 
 	//initializing all the configs
-	// ethCl := configs.InitEthClient()
-	// defer ethCl.Close()
+	ethCl := configs.InitEthClient()
+	defer ethCl.Close()
 	configs.InitTwilio()
 	psqlConn := configs.InitPsql()
 	defer psqlConn.Close()
 
+	//initializing all routes
 	mux := http.NewServeMux()
-	//add cors allow all origins
 
 	routes.AuthRoutes(mux)
 	routes.UserRoutes(mux)
-	routes.BorrowerRoutes(mux)
 	routes.LoanRoutes(mux)
+	routes.PaymentRoutes(mux)
+	routes.BorrowerRoutes(mux)
 
 	handler := cors.AllowAll().Handler(mux)
 

@@ -8,6 +8,7 @@ import (
 	"server/internal/configs"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type Loan struct {
@@ -130,10 +131,12 @@ func getContractInvestedLoans(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	adrs := common.HexToAddress(walletAddress)
+
 	contract := configs.LoanContract
 
 	var result []any
-	if err := contract.Call(&bind.CallOpts{Context: context.Background()}, &result, "getLendersLoanInfo", walletAddress); err != nil {
+	if err := contract.Call(&bind.CallOpts{Context: context.Background()}, &result, "getLendersLoanInfo", adrs); err != nil {
 		fmt.Fprintln(w, "network error cannot get laon details")
 		fmt.Println("err ex LoanDetails :", err)
 	}

@@ -8,6 +8,7 @@ import (
 	"server/internal/configs"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind/v2"
+	"github.com/ethereum/go-ethereum/common"
 )
 
 type LoanReq struct {
@@ -90,23 +91,24 @@ func getContractLoanDetails(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//get the wallet address from the aadhar
+	// get the wallet address from the aadhar
 	db := configs.PsqlDB
 	query := `SELECT wallet_address FROM users WHERE adhaar_card_num = $1;`
-	var walletAddress string
-	err := db.QueryRow(query, input.Aadhar).Scan(&walletAddress)
+	var walletAdrs string
+	err := db.QueryRow(query, input.Aadhar).Scan(&walletAdrs)
 	if err != nil {
 		fmt.Println("Error querying data:", err)
 		http.Error(w, "Error querying data", http.StatusInternalServerError)
 		return
 	}
+	adrs := common.HexToAddress(walletAdrs)
 
 	contract := configs.LoanContract
 
 	var result []any
-	if err := contract.Call(&bind.CallOpts{Context: context.Background()}, &result, "getBorrowersLoanInfo", walletAddress); err != nil {
-		fmt.Fprintln(w, "network error cannot get laon details")
-		fmt.Println("err ex LoanDetails :", err)
+	if err := contract.Call(&bind.CallOpts{Context: context.Background()}, &result, "getBorrowersLoanInfo", adrs); err != nil {
+		http.Error(w, "network error cannot get laon details", http.StatusInternalServerError)
+		fmt.Println("err ex borrower loan info:", err)
 	}
 	fmt.Println("result : ", result)
 
@@ -115,6 +117,7 @@ func getContractLoanDetails(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(result)
 }
 
+//routes for borrower operations
 func BorrowerRoutes(mux *http.ServeMux) {
 	mux.HandleFunc("POST /borrower/create-loan", createLoanReq)
 	mux.HandleFunc("POST /borrower/view-loan", getLoanDetails)

@@ -7,6 +7,7 @@ require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible
 	github.com/joho/godotenv v1.5.1
 	github.com/lib/pq v1.10.9
+	github.com/razorpay/razorpay-go v1.3.2
 	github.com/rs/cors v1.7.0
 	github.com/twilio/twilio-go v1.25.1
 )
