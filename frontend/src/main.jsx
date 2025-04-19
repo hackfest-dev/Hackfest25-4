@@ -15,7 +15,7 @@ import Profile from "./components/Profile/Profile.jsx";
 import Signup from "./components/Auth/Signup.jsx";
 import OTPVerification from "./components/Auth/OTPVerification.jsx";
 import LoanRequest from "./components/Loans/LoanRequest.jsx";
-
+import LoanDetails from "./components/Loans/LoanDetails.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -52,6 +52,10 @@ const router = createBrowserRouter([
       {
         path: "/loan-request",
         element: <LoanRequest />,
+      },
+      {
+        path: "/loan/:id",
+        element: <LoanDetails />,
       },
     ],
   },

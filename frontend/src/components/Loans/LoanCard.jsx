@@ -1,6 +1,7 @@
 import React from "react";
-
+import { useNavigate } from "react-router";
 function LoanCard({ loan }) {
+  const navigate = useNavigate();
   return loan ? (
     <div className=" bg-neutral-950 text-white rounded-2xl p-4">
       <div className="my-2 grid grid-cols-4">
@@ -8,7 +9,7 @@ function LoanCard({ loan }) {
         <h2 className=" text-gray-400">
           Installment: <span className=" text-white">Monthly</span>
         </h2>
-        <span className="ml-9 pl-2 size-5.5 bg-blue-500 rounded-full text-white">
+        <span onClick={() => navigate(`/loan/${loan.id}`)} className="ml-9 pl-2 size-5.5 bg-blue-500 rounded-full text-white">
           {">"}
         </span>
       </div>
