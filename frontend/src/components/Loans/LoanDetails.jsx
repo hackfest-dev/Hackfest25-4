@@ -9,6 +9,7 @@ function LoanDetails() {
   const status = useSelector((state) => state.auth.status);
   const { id } = useParams();
   const [percent, setPercent] = useState(0);
+  const [invAmt, setInvAmt] = useState(0);
 
   const [data, setData] = useState([
     {
@@ -40,20 +41,24 @@ function LoanDetails() {
   };
 
   const handleClick = () => {
-    //handle with razor pay
-
     //first param is investment amount, second is loan amount
-    updatePercent(1000, 10000);
+    updatePercent(invAmt, 10000);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // fetch a single loan document based on id
-        const res = await fetch("http://localhost:5000/user/loans/loanId");
-        if (res.status == 200) {
-          setData(res.data);
-        }
+        const res = await fetch("http://localhost:8080/lender/loan", {
+          method: "POST",
+          body: JSON.stringify({
+            loan_id: id,
+          }),
+        });
+        console.log();
+        const body = await res.json();
+        setData(body);
+        console.log(body);
       } catch (error) {
         console.log(error);
       }
@@ -62,7 +67,7 @@ function LoanDetails() {
     fetchData();
   }, [status]);
   return (
-    <div className=" bg-neutral-950 h-screen p-10">
+    <div className=" bg-neutral-950 p-10">
       <div className=" my-12 p-10 rounded-xl bg-zinc-900 text-white">
         <h1 className=" text-neutral-500 text-sm my-3.5 ml-10">
           Loan ID: <strong>5igsfjf5w54snf</strong>
@@ -121,12 +126,22 @@ function LoanDetails() {
                     trailColor="#212221"
                   />
                 </Flex>
-                <button
-                  onClick={handleClick}
-                  className="my-3.5 bg-blue-600 bg p-3.5 rounded-xl tracking-wide font-semibold text-black"
-                >
-                  Invest
-                </button>
+                <form className=" flex flex-col mt-10">
+                  <input
+                    type="number"
+                    name="amt"
+                    id="amt"
+                    min={1000}
+                    onChange={(e) => Number(setInvAmt(e.target.value))}
+                    className=" p-4 text-white border-2 border-blue-600  "
+                  />
+                  <button
+                    onClick={handleClick}
+                    className="my-3.5 bg-blue-600 bg p-3.5 rounded-xl tracking-wide font-semibold text-black outline-none"
+                  >
+                    Invest
+                  </button>
+                </form>
               </Flex>
             </ConfigProvider>
           </div>
