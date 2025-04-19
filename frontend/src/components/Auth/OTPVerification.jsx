@@ -71,12 +71,17 @@ function OTPVerification({ isOpen = true }) {
   const sendOtp = async () => {
     try {
       setLoading(true);
-      fetch("http://localhost:5000/send-otp", {})
+      fetch("http://localhost:8080/auth/send-otp", {
+        method: "POST",
+        body: JSON.stringify({ phoneNumber: "+91" + phoneNumber }),
+      })
         .then((res) => {
-          if (res.status !== 200) {
+          if (res.status === 200) {
             setOtpSent(true);
             notifyOTPSent();
             setError("");
+          } else {
+            toast.error("error");
           }
         })
         .catch((err) => {
@@ -93,19 +98,23 @@ function OTPVerification({ isOpen = true }) {
   const verifyOtp = async () => {
     try {
       setLoading(true);
-      fetch("http://localhost:5000/verify", {
+      const res = await fetch("http://localhost:8080/auth/verify-otp", {
         method: "POST",
-      })
-        .then((res) => {
-          if (res.body.name) {
-            notifyOTPSuccess();
-            setTimeout(() => navigate("/"), 1000);
-          } else {
-            notifyOTPFailure();
-          }
-        })
-        .catch((err) => console.log(err));
-      console.log("OTP verified successfully");
+        body: JSON.stringify({
+          phoneNumber: "+91" + phoneNumber,
+          otp,
+        }),
+      });
+
+      //read the name from res body
+      const body = await res.json();
+
+      if (body.name == "") {
+        navigate("/register");
+      } else {
+        notifyOTPSuccess();
+        navigate("/");
+      }
     } catch (error) {
       setError("Invalid OTP. Please try again.");
     } finally {

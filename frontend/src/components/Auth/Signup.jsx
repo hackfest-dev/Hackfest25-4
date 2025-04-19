@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { login } from "../../Store/authSlice";
+
+import { ToastContainer, toast, Bounce } from "react-toastify";
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
@@ -119,18 +121,14 @@ function Login() {
     e.preventDefault();
     if (validateForm()) {
       try {
-        fetch("http://localhost:5000/register-user", {
+        await fetch("http://localhost:8080/user/create", {
           method: "POST",
-        })
-        .then((res) => {
-          dispatch(login(res.data));
-        })
-        .catch((err) => {
-          console.log(err);
+          body: JSON.stringify(formData),
         });
-        console.log("Form submitted with data:", formData);
-      } catch (error) {
-        console.error("Error submitting form:", error);
+
+        toast.success("Form submitted");
+      } catch (err) {
+        toast.error("Error submitting form");
       }
     }
   };

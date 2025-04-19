@@ -31,6 +31,8 @@ func sendOtp(w http.ResponseWriter, r *http.Request) {
 	}
 	phNum := reqBody.PhoneNumber
 
+	fmt.Println(phNum)
+
 	serviceSid := os.Getenv("TWILIO_SERVICE_SID")
 
 	client := configs.TwilioClient
@@ -49,6 +51,7 @@ func sendOtp(w http.ResponseWriter, r *http.Request) {
 	//response with cookie
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("OTP sent successfully"))
+
 }
 
 // to verify otp

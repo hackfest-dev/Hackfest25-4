@@ -11,18 +11,19 @@ function App() {
 
   useEffect(() => {
     if (!authStatus) {
-      fetch("http://localhost:5000/verify", {
+      fetch("http://localhost:8080/user/verify-user", {
         method: "GET",
       })
         .then((res) => {
-          if (res == null) {
+          if (res.status === 401) {
             navigate("/verify-otp");
-          } else {
+          }else{
             navigate("/");
           }
         })
         .catch((err) => {
-          console.log(err);
+          navigate("/verify-otp");
+          console.log("error :",err);
         });
     }
   }, [authStatus]);
