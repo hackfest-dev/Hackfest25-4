@@ -73,9 +73,9 @@ async function main() {
   // Get all loans for each lender
   console.log("\nLOAN INFORMATION BY LENDER:\n");
   
-  await displayLenderLoans(Loans, loans, lender1, "Lender 1");
-  await displayLenderLoans(Loans, loans, lender2, "Lender 2");
-  await displayLenderLoans(Loans, loans, lender3, "Lender 3");
+  await displayLenderLoans(loans, lender1, "Lender 1");
+  await displayLenderLoans(loans, lender2, "Lender 2");
+  await displayLenderLoans(loans, lender3, "Lender 3");
 }
 
 async function displayBorrowerLoans(loansContract, borrower, borrowerName) {
@@ -109,7 +109,7 @@ async function displayBorrowerLoans(loansContract, borrower, borrowerName) {
   console.log(""); // Empty line for better readability
 }
 
-async function displayLenderLoans(contract, loansContract, lender, lenderName) {
+async function displayLenderLoans(loansContract, lender, lenderName) {
   const lenderLoanIds = await loansContract.getLendersLoanInfo(lender.address);
   
   console.log(`${lenderName} (${lender.address}) is involved in ${lenderLoanIds.length} loans:`);
@@ -124,8 +124,8 @@ async function displayLenderLoans(contract, loansContract, lender, lenderName) {
     console.log(`  Tenure: ${loan.tenure} months`);
     console.log(`  Interest Rate: ${loan.interestRate}%`);
     
-    // Find this lender's contribution percentage
-    const [addresses, percentages] = await contract.getLendersForLoan(loanId);
+    // Use the same loansContract instance
+    const [addresses, percentages] = await loansContract.getLendersForLoan(loanId);
     if (addresses.length === 0) {
         console.log(`Lender details not found for Loan ID ${loanId}.`);
     } else {
