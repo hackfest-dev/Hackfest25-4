@@ -39,7 +39,7 @@ contract Loans {
         int8 agreedPenalty,
         address[] calldata lenderAddresses,
         uint8[] calldata percentages
-    ) external {
+    ) external returns (uint256) {
         require(
             lenderAddresses.length == percentages.length,
             "Mismatched lenders and percentages"
@@ -52,8 +52,9 @@ contract Loans {
         }
         require(totalPercent == 100, "Total percentage must equal 100");
 
-        LoanAgreement storage loan = loanAgreements[nextLoanId];
-        loan.loanId = nextLoanId;
+        uint256 currentLoanId = nextLoanId;
+        LoanAgreement storage loan = loanAgreements[currentLoanId];
+        loan.loanId = currentLoanId;
         loan.borrower = borrower;
         loan.principal = principal;
         loan.tenure = tenure;
@@ -89,6 +90,7 @@ contract Loans {
             );
         }
         nextLoanId++;
+        return currentLoanId;
     }
 
     function getBorrowersLoanInfo(

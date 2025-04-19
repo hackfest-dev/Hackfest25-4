@@ -21,7 +21,10 @@ async function main() {
   // Helper function to get current timestamp
   const currentTimestamp = Math.floor(Date.now() / 1000);
 
-  // Create Loan 1
+  // Create Loan 1 - First get the next loan ID
+  let nextLoanId = await loans.nextLoanId();
+  const loan1Id = Number(nextLoanId);
+  
   const loan1Tx = await loans.createLoan(
     borrower1.address,
     10000, // principal: 10,000 (in smallest unit, e.g., wei)
@@ -33,9 +36,12 @@ async function main() {
     [60, 40] // percentages: 60% and 40%
   );
   const loan1Receipt = await loan1Tx.wait();
-  console.log(`Loan 1 created. Gas used: ${loan1Receipt.gasUsed.toString()}`);
+  console.log(`Loan 1 created with ID: ${loan1Id}. Gas used: ${loan1Receipt.gasUsed.toString()}`);
 
   // Create Loan 2
+  nextLoanId = await loans.nextLoanId();
+  const loan2Id = Number(nextLoanId);
+  
   const loan2Tx = await loans.createLoan(
     borrower2.address,
     5000, // principal: 5,000
@@ -47,9 +53,12 @@ async function main() {
     [70, 30] // percentages: 70% and 30%
   );
   const loan2Receipt = await loan2Tx.wait();
-  console.log(`Loan 2 created. Gas used: ${loan2Receipt.gasUsed.toString()}`);
+  console.log(`Loan 2 created with ID: ${loan2Id}. Gas used: ${loan2Receipt.gasUsed.toString()}`);
 
   // Create Loan 3
+  nextLoanId = await loans.nextLoanId();
+  const loan3Id = Number(nextLoanId);
+  
   const loan3Tx = await loans.createLoan(
     borrower3.address,
     15000, // principal: 15,000
@@ -61,7 +70,7 @@ async function main() {
     [30, 30, 40] // percentages: 30%, 30%, and 40%
   );
   const loan3Receipt = await loan3Tx.wait();
-  console.log(`Loan 3 created. Gas used: ${loan3Receipt.gasUsed.toString()}\n`);
+  console.log(`Loan 3 created with ID: ${loan3Id}. Gas used: ${loan3Receipt.gasUsed.toString()}\n`);
 
   // Get all loans for each borrower
   console.log("LOAN INFORMATION BY BORROWER (BEFORE UPDATES):\n");
@@ -80,10 +89,10 @@ async function main() {
   console.log("\n\n========== DEMONSTRATING UPDATE INSTALLMENT FUNCTION ==========\n");
 
   // 1. Update a single installment for Loan 1
-  console.log("Updating installment 0 for Loan 1...");
+  console.log(`Updating installment 0 for Loan ${loan1Id}...`);
   const newDueDate1 = currentTimestamp + (60 * 24 * 60 * 60); // current time + 60 days
   let tx = await loans.connect(borrower1).updateInstallment(
-    1,                
+    loan1Id,                
     0,                
     true,             
     newDueDate1,      
@@ -93,7 +102,7 @@ async function main() {
   console.log("Installment updated successfully!");
 
   // 2. Update multiple installments for Loan 2 (marking all as paid to test completion)
-  console.log("\nUpdating all installments for Loan 2 (marking all as paid)...");
+  console.log(`\nUpdating all installments for Loan ${loan2Id} (marking all as paid)...`);
   
   // Get current loan 2 data
   const loan2Data = await loans.getBorrowersLoanInfo(borrower2.address);
@@ -101,10 +110,10 @@ async function main() {
   
   // Mark each installment as paid
   for (let i = 0; i < installmentCount; i++) {
-    console.log(`Updating installment ${i} for Loan 2...`);
+    console.log(`Updating installment ${i} for Loan ${loan2Id}...`);
     const newDueDate = currentTimestamp + ((i + 1) * 30 * 24 * 60 * 60); // Extend by 30 days per installment
     tx = await loans.connect(borrower2).updateInstallment(
-      2,                
+      loan2Id,                
       i,               
       true,            
       newDueDate,       
@@ -112,13 +121,13 @@ async function main() {
     );
     await tx.wait();
   }
-  console.log("All installments for Loan 2 marked as paid!");
+  console.log(`All installments for Loan ${loan2Id} marked as paid!`);
 
   // 3. Try to update an installment as a non-borrower (should fail)
-  console.log("\nAttempting to update installment 0 for Loan 3 as a non-borrower (should fail)...");
+  console.log(`\nAttempting to update installment 0 for Loan ${loan3Id} as a non-borrower (should fail)...`);
   try {
     tx = await loans.connect(borrower1).updateInstallment(
-      3,             
+      loan3Id,             
       0,               
       true,           
       currentTimestamp + (60 * 24 * 60 * 60), 
@@ -131,10 +140,10 @@ async function main() {
   }
 
   // 4. Try to update an invalid installment index (should fail)
-  console.log("\nAttempting to update invalid installment index for Loan 1 (should fail)...");
+  console.log(`\nAttempting to update invalid installment index for Loan ${loan1Id} (should fail)...`);
   try {
     tx = await loans.connect(borrower1).updateInstallment(
-      1,                
+      loan1Id,                
       99,               
       true,             
       currentTimestamp + (60 * 24 * 60 * 60), 
@@ -154,11 +163,11 @@ async function main() {
   
   // Check if Loan 2 is now marked as completed
   const updatedLoan2Data = await loans.getBorrowersLoanInfo(borrower2.address);
-  console.log(`\nLoan 2 completion status: ${updatedLoan2Data[0].isCompleted}`);
+  console.log(`\nLoan ${loan2Id} completion status: ${updatedLoan2Data[0].isCompleted}`);
   if (updatedLoan2Data[0].isCompleted) {
-    console.log("✅ Loan 2 has been successfully marked as completed after all installments were paid!");
+    console.log(`✅ Loan ${loan2Id} has been successfully marked as completed after all installments were paid!`);
   } else {
-    console.log("❌ Loan 2 was not marked as completed despite all installments being paid!");
+    console.log(`❌ Loan ${loan2Id} was not marked as completed despite all installments being paid!`);
   }
 }
 
