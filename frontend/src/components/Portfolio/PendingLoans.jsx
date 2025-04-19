@@ -19,15 +19,19 @@ function PendingLoans() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/user/loans/requests");
-        if (res.status == 200) {
-          setData(res.data);
-        }
+        const aadhar = localStorage.getItem("aadhar");
+        const res = await fetch("http://localhost:8080/borrower/view-loan", {
+          method: "POST",
+          body: JSON.stringify({
+            aadhar,
+          }),
+        });
+        console.log(res);
       } catch (error) {
         console.log(error);
       }
     };
-    
+
     fetchData();
   }, [status]);
 

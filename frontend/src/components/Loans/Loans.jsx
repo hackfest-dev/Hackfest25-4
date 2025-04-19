@@ -26,10 +26,12 @@ function Loans() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await fetch("http://localhost:5000/user/loans/requests");
-        if (res.status == 200) {
-          setData(res.data);
-        }
+        const res = await fetch("http://localhost:8080/lender/all-loan", {
+          method: "post",
+        });
+        const body = await res.json();
+        setData(body);
+        console.log(body);
       } catch (error) {
         console.log(error);
       }
@@ -50,7 +52,10 @@ function Loans() {
         {data.length != 0 ? (
           <div className=" grid grid-cols-1 gap-y-5 ">
             {data.map((item) => (
-              <div key={item.id} className=" grid grid-cols-1 gap-y-5">
+              <div
+                key={Math.random() * 10}
+                className=" grid grid-cols-1 gap-y-5"
+              >
                 <LoanCard loan={item} />
               </div>
             ))}

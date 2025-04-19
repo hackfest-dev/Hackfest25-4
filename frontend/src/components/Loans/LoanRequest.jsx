@@ -13,7 +13,7 @@ function LoanRequest() {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: Number(value),
+      [name]: value,
     }));
     // Clear error when user starts typing
     if (errors[name]) {
@@ -62,19 +62,15 @@ function LoanRequest() {
           method: "POST",
           body: JSON.stringify({
             aadhar,
-            amount: formData.amount,
-            tenure: formData.tenure,
-            interestRate: formData.interestRate,
+            amount: Number(formData.amount),
+            tenure: parseInt(formData.months),
+            rate: Number(formData.interestRate),
           }),
         });
-        console.log(formData);
         toast.success("Loan request created successfully!!");
       } catch (error) {
         console.log(error);
       }
-
-      console.log("Form submitted with data:", formData);
-      // Handle form submission here
     }
   };
 

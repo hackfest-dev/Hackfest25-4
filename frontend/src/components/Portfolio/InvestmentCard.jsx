@@ -164,10 +164,6 @@ const items = [
 ];
 
 function InvestmentCard() {
-  
-  const onChange = (key) => {
-    console.log(key);
-  };
 
   return (
     <div className=" bg-neutral-950 text-white rounded-2xl px-10 py-5">
@@ -205,7 +201,7 @@ function InvestmentCard() {
         }}
       >
         <div className=" my-6">
-          <Collapse items={items} onChange={onChange} />
+          <Collapse items={items}/>
         </div>
       </ConfigProvider>
     </div>
