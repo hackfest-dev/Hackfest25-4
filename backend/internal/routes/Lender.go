@@ -45,7 +45,69 @@ func getAllLoanReq(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(allLoans)
 }
 
+// to get the loan requests of the user
+func getInvestedLoans(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		Aadhar string `json:"aadhar"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	db := configs.PsqlDB
+
+	query := `SELECT *
+	FROM loan_asked
+	WHERE EXISTS (
+    SELECT 1
+    FROM jsonb_array_elements(contributions) AS contrib
+    WHERE contrib->>'adhaar_card_num' = $1
+	);`
+
+	var loanReq Loan
+	err := db.QueryRow(query, input.Aadhar).Scan(&loanReq.LoanID, &loanReq.Aadhar, &loanReq.Amt, &loanReq.Tenure, &loanReq.Rate, &loanReq.Penalty, &loanReq.Contributions)
+	if err != nil {
+		fmt.Println("Error querying data:", err)
+		http.Error(w, "Error querying data", http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println("loan req", loanReq)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(loanReq)
+}
+
+// to get a single laon based on loan id
+func getLoan(w http.ResponseWriter, r *http.Request) {
+	var input struct {
+		LoanID int64 `json:"loan_id"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&input); err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	db := configs.PsqlDB
+
+	query := `SELECT * FROM loan_asked WHERE loan_id = $1;`
+
+	var loanReq Loan
+	err := db.QueryRow(query, input.LoanID).Scan(&loanReq.LoanID, &loanReq.Aadhar, &loanReq.Amt, &loanReq.Tenure, &loanReq.Rate, &loanReq.Penalty, &loanReq.Contributions)
+	if err != nil {
+		fmt.Println("Error querying data:", err)
+		http.Error(w, "Error querying data", http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(loanReq)
+}
+
 // routes to for loan operations
 func LoanRoutes(mux *http.ServeMux) {
+	mux.HandleFunc("POST /lender/loan", getLoan)
 	mux.HandleFunc("POST /lender/all-loan", getAllLoanReq)
+	mux.HandleFunc("POST /lender/invested-loan", getInvestedLoans)
 }

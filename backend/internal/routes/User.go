@@ -44,7 +44,9 @@ type User struct {
 	Ifsc      string `json:"ifsc"`
 }
 
-type VerifyArg struct{ Aadhar string `json:"aadhar"` }
+type VerifyArg struct {
+	Aadhar string `json:"aadhar"`
+}
 
 // to return the varified user
 func verifyUser(w http.ResponseWriter, r *http.Request) {
@@ -147,8 +149,8 @@ func CreateCustodialWallet(adNum string) error {
 	db := configs.PsqlDB
 	hashPrivateKey := crypto.Keccak256Hash(crypto.FromECDSA(privateKey))
 
-	_, err = db.Exec("INSERT INTO wallet (adhaar_card_num, public_key, private_key_encrypted) VALUES ($1, $2, $3)",
-		adNum, addrs.Hex(), hashPrivateKey.Hex())
+	_, err = db.Exec("INSERT INTO wallet (adhaar_card_num, public_key, private_key_encrypted, balance) VALUES ($1, $2, $3, $4)",
+		adNum, addrs.Hex(), hashPrivateKey.Hex(), wei.String())
 	if err != nil {
 		return err
 	}

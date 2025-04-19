@@ -76,6 +76,6 @@ func getLoanDetails(w http.ResponseWriter, r *http.Request) {
 }
 
 func BorrowerRoutes(mux *http.ServeMux) {
-	mux.HandleFunc("POST /borrower/loan-req", createLoanReq)
+	mux.HandleFunc("POST /borrower/create-loan", createLoanReq)
 	mux.HandleFunc("POST /borrower/view-loan", getLoanDetails)
 }
