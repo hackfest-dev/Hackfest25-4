@@ -1,16 +1,16 @@
 import React, { useState } from "react";
-
+import { useDispatch } from "react-redux";
+import { login } from "../../Store/authSlice";
 function Login() {
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
     name: "",
-    age: "",
-    gender: "",
     phone: "",
     address: "",
     city: "",
     state: "",
+    pincode: "",
+    aadharNumber: "",
     pan: "",
     accountNumber: "",
     ifsc: "",
@@ -18,6 +18,8 @@ function Login() {
   });
 
   const [errors, setErrors] = useState({});
+
+  const dispatch = useDispatch();
 
   const validateForm = () => {
     const newErrors = {};
@@ -29,28 +31,9 @@ function Login() {
       newErrors.email = "Please enter a valid email address";
     }
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
     // Name validation
     if (!formData.name) {
       newErrors.name = "Name is required";
-    }
-
-    // Age validation
-    if (!formData.age) {
-      newErrors.age = "Age is required";
-    } else if (formData.age < 18 || formData.age > 80) {
-      newErrors.age = "Age must be between 18 and 80";
-    }
-
-    // Gender validation
-    if (!formData.gender) {
-      newErrors.gender = "Please select your gender";
     }
 
     // Phone validation
@@ -73,6 +56,18 @@ function Login() {
     // State validation
     if (!formData.state) {
       newErrors.state = "State is required";
+    }
+
+    if (!formData.pincode) {
+      newErrors.pincode = "Pincode is required";
+    } else if (!/^\d{6}$/.test(formData.pincode)) {
+      newErrors.pincode = "Please enter a valid 6-digit pincode";
+    }
+
+    if (!formData.aadharNumber) {
+      newErrors.aadharNumber = "Aadhar number is required";
+    } else if (!/^\d{12}$/.test(formData.aadharNumber)) {
+      newErrors.aadharNumber = "Please enter a valid 12-digit aadhar number";
     }
 
     // PAN validation
@@ -124,6 +119,15 @@ function Login() {
     e.preventDefault();
     if (validateForm()) {
       try {
+        fetch("http://localhost:5000/register-user", {
+          method: "POST",
+        })
+        .then((res) => {
+          dispatch(login(res.data));
+        })
+        .catch((err) => {
+          console.log(err);
+        });
         console.log("Form submitted with data:", formData);
       } catch (error) {
         console.error("Error submitting form:", error);
@@ -157,22 +161,7 @@ function Login() {
                 <p className="text-red-500 text-sm mt-1">{errors.email}</p>
               )}
             </div>
-            <div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="w-full px-4 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-indigo-500"
-                placeholder="Password"
-                value={formData.password}
-                onChange={handleChange}
-              />
-              {errors.password && (
-                <p className="text-red-500 text-sm mt-1">{errors.password}</p>
-              )}
-            </div>
+
             <div>
               <input
                 id="name"
@@ -186,53 +175,6 @@ function Login() {
               />
               {errors.name && (
                 <p className="text-red-500 text-sm mt-1">{errors.name}</p>
-              )}
-            </div>
-            <div>
-              <input
-                id="age"
-                name="age"
-                type="number"
-                min={18}
-                max={80}
-                required
-                title="Age must be between 18 and 80"
-                className="w-full px-4 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-indigo-500"
-                placeholder="Your Age"
-                value={formData.age}
-                onChange={handleChange}
-              />
-              {errors.age && (
-                <p className="text-red-500 text-sm mt-1">{errors.age}</p>
-              )}
-            </div>
-            <div>
-              <div className="flex space-x-4">
-                <label className="text-white">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    className="mr-2"
-                    checked={formData.gender === "male"}
-                    onChange={handleChange}
-                  />
-                  Male
-                </label>
-                <label className="text-white">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="female"
-                    className="mr-2"
-                    checked={formData.gender === "female"}
-                    onChange={handleChange}
-                  />
-                  Female
-                </label>
-              </div>
-              {errors.gender && (
-                <p className="text-red-500 text-sm mt-1">{errors.gender}</p>
               )}
             </div>
             <div>
@@ -300,6 +242,39 @@ function Login() {
                 <p className="text-red-500 text-sm mt-1">{errors.state}</p>
               )}
             </div>
+            <div>
+              <input
+                id="pincode"
+                name="pincode"
+                type="text"
+                required
+                className="w-full px-4 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-indigo-500"
+                placeholder="Your Pincode"
+                value={formData.pincode}
+                onChange={handleChange}
+              />
+              {errors.pincode && (
+                <p className="text-red-500 text-sm mt-1">{errors.pincode}</p>
+              )}
+            </div>
+            <div>
+              <input
+                id="aadharNumber"
+                name="aadharNumber"
+                type="text"
+                required
+                className="w-full px-4 py-2 rounded-lg bg-neutral-800 text-white border border-neutral-700 focus:outline-none focus:border-indigo-500"
+                placeholder="Your Aadhar Number"
+                value={formData.aadharNumber}
+                onChange={handleChange}
+              />
+              {errors.aadharNumber && (
+                <p className="text-red-500 text-sm mt-1">
+                  {errors.aadharNumber}
+                </p>
+              )}
+            </div>
+
             <div>
               <input
                 id="pan"
