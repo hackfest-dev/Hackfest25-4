@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import { toast } from "react-toastify";
 function LoanRequest() {
   const [formData, setFormData] = useState({
     amount: "",
@@ -31,7 +31,8 @@ function LoanRequest() {
     if (!formData.amount) {
       newErrors.amount = "Amount is required";
     } else if (
-      formData.amount >= 5000 && formData.amount <= 100000 &&
+      formData.amount >= 5000 &&
+      formData.amount <= 100000 &&
       isNaN(formData.amount)
     ) {
       newErrors.amount = "Please enter a valid amount";
@@ -52,9 +53,20 @@ function LoanRequest() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
+      try {
+        const aadhar = localStorage.getItem("aadhar");
+        await fetch("http://localhost:8080/borrower/create-loan", {
+          method: "POST",
+          body: JSON.stringify({ formData: formData, aadhar: aadhar }),
+        });
+        toast.success("Loan request created successfully!!");
+      } catch (error) {
+        console.log(error);
+      }
+
       console.log("Form submitted with data:", formData);
       // Handle form submission here
     }
